@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class CoffeeMakerTest {
     private CoffeeMaker maker;
@@ -270,7 +271,7 @@ class CoffeeMakerTest {
         assertEquals(15, inventory.getChocolate());
     }
 
-    /** Verifies that checkInventory returns the same inventory object as stock changes. */
+    /** Returns the same inventory object as stock changes. */
     @Test
     void checkInventory() {
         // Arrange: capture a reference to the machine's inventory.
@@ -285,5 +286,92 @@ class CoffeeMakerTest {
         assertSame(inventory, currentInventory);
         assertEquals(16, inventory.getMilk());
     }
+
+     /** An exact price purchase returns change appropriately 
+      * and updates remaining inventory correctly.
+      */
+    @Test
+    void exactChangeAndInventoryUpdate() {
+        // Arrange: BVA tests payment exactly equal to the recipe price (10).
+        Recipe latte = recipe("Latte", 10, 3, 2, 4, 1);
+        maker.addRecipe(latte);
+
+        // Act: purchase the drink with exact payment and inspect remaining stock.
+        int change = maker.makeCoffee(latte, 10);
+        Inventory inventory = maker.checkInventory();
+
+        // Assert: no change is due 
+        // All ingredients used deducted from inventory correctly
+        assertEquals(0, change);
+        assertEquals(12, inventory.getCoffee());
+        assertEquals(13, inventory.getMilk());
+        assertEquals(11, inventory.getSugar());
+        assertEquals(14, inventory.getChocolate());
+    }
+
+     /** Overpayment returns the correct change. */
+    @Test
+    void correctChangeReturns() {
+        // Arrange: ISP covers payment greater than the recipe price.
+        Recipe latte = recipe("Latte", 10, 1, 1, 1, 1);
+        maker.addRecipe(latte);
+
+        // Act: pay 17 for a drink that costs 10.
+        int change = maker.makeCoffee(latte, 17);
+
+        // Assert: the machine returns the extra 7 units.
+        assertEquals(7, change);
+    }
+
+    /** Verifies that paying too little refunds the full amount and consumes no ingredients. */
+    @Test
+    void insufficientPayment() {
+        // Arrange: BVA uses a payment of 9, one unit below the required price of 10.
+        Recipe latte = recipe("Latte", 10, 1, 2, 3, 4);
+        maker.addRecipe(latte);
+
+        // Act: attempt to buy the drink with insufficient payment.
+        int refund = maker.makeCoffee(latte, 9);
+        Inventory inventory = maker.checkInventory();
+
+        // Assert: the entire payment is returned and no ingredients are deducted.
+        assertEquals(9, refund);
+        assertEquals(15, inventory.getCoffee());
+        assertEquals(15, inventory.getMilk());
+        assertEquals(15, inventory.getSugar());
+        assertEquals(15, inventory.getChocolate());
+    }
+
+        /** Verifies that a shortage of any single ingredient blocks a purchase without consumption. */
+    @ParameterizedTest
+    @ValueSource(strings = {"coffee", "milk", "sugar", "chocolate"})
+    void outOfIngredient(String scarceIngredient) {
+        // Arrange: ISP checks each possible single-ingredient shortage separately.
+        // BVA sets one ingredient to 1, just below the required quantity of 2.
+        Recipe latte = recipe("Latte", 10, 2, 2, 2, 2);
+        maker.addRecipe(latte);
+        Inventory inventory = maker.checkInventory();
+        switch (scarceIngredient) {
+            case "coffee" -> inventory.setCoffee(1);
+            case "milk" -> inventory.setMilk(1);
+            case "sugar" -> inventory.setSugar(1);
+            case "chocolate" -> inventory.setChocolate(1);
+        }
+        int beforeCoffee = inventory.getCoffee();
+        int beforeMilk = inventory.getMilk();
+        int beforeSugar = inventory.getSugar();
+        int beforeChocolate = inventory.getChocolate();
+
+        // Act: attempt a purchase with enough money but insufficient ingredients.
+        int refund = maker.makeCoffee(latte, 20);
+
+        // Assert: payment is fully returned and no ingredient is used.
+        assertEquals(20, refund);
+        assertEquals(beforeCoffee, inventory.getCoffee());
+        assertEquals(beforeMilk, inventory.getMilk());
+        assertEquals(beforeSugar, inventory.getSugar());
+        assertEquals(beforeChocolate, inventory.getChocolate());
+    }
+
 
 }
