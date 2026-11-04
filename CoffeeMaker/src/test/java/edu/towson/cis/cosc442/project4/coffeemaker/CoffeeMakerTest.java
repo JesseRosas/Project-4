@@ -144,7 +144,7 @@ class CoffeeMakerTest {
 
      /** Verifies that a null or unnamed recipe cannot be deleted. */
     @Test
-    void deletingNullOrEmptyRecipeReturnsFalse() {
+    void deletingNullOrEmptyRecipe() {
         // Arrange: ISP covers a null object and a non-null object with a null name.
         Recipe unnamed = new Recipe();
 
@@ -156,4 +156,63 @@ class CoffeeMakerTest {
         assertFalse(deletedNull);
         assertFalse(deletedUnnamed);
     }
+
+    /** Verifies that editing a recipe updates its details without moving or renaming it. */
+    @Test
+    void editExistingRecipe() {
+        // Arrange: store a Latte and prepare updated values with the same name.
+        Recipe old = recipe("Latte", 10, 2, 1, 1, 0);
+        Recipe updated = recipe("Latte", 20, 3, 2, 2, 1);
+        maker.addRecipe(old);
+
+        // Act: replace the original recipe with the updated recipe.
+        boolean edited = maker.editRecipe(old, updated);
+        Recipe stored = maker.getRecipeForName("Latte");
+
+        // Assert: editing succeeds; name, slot, price, and ingredients are correct.
+        assertTrue(edited);
+        assertSame(updated, maker.getRecipes()[0]);
+        assertEquals("Latte", stored.getName());
+        assertEquals(20, stored.getPrice());
+        assertEquals(3, stored.getAmtCoffee());
+        assertEquals(2, stored.getAmtMilk());
+        assertEquals(2, stored.getAmtSugar());
+        assertEquals(1, stored.getAmtChocolate());
+    }
+
+    /** Verifies that editing cannot change a stored recipe's name. */
+    @Test
+    void editCannotRenameExistingRecipe() {
+        // Arrange: ISP uses different old and new recipe names.
+        Recipe latte = recipe("Latte", 10, 2, 1, 1, 0);
+        maker.addRecipe(latte);
+        Recipe renamed = recipe("Renamed", 20, 3, 3, 3, 3);
+
+        // Act: attempt to rename the stored recipe through editRecipe.
+        boolean edited = maker.editRecipe(latte, renamed);
+
+        // Assert: the rename fails and the original is unchanged.
+        assertFalse(edited);
+        assertSame(latte, maker.getRecipeForName("Latte"));
+        assertNull(maker.getRecipeForName("Renamed").getName());
+    }
+
+    /** Verifies that editing a recipe does not accidentally open another recipe slot. */
+    @Test
+    void editingDoesNotFreeExtraRecipeSlots() {
+        // Arrange: BVA fills all three slots, then prepares an edit and a fourth recipe.
+        Recipe a = recipe("A", 1, 1, 1, 1, 1);
+        maker.addRecipe(a);
+        maker.addRecipe(recipe("B", 2, 1, 1, 1, 1));
+        maker.addRecipe(recipe("C", 3, 1, 1, 1, 1));
+
+        // Act: edit the first recipe, then try to add a fourth.
+        boolean edited = maker.editRecipe(a, recipe("A", 5, 2, 2, 2, 2));
+        boolean addedFourth = maker.addRecipe(recipe("D", 4, 1, 1, 1, 1));
+
+        // Assert: editing succeeds but the machine remains at full capacity.
+        assertTrue(edited);
+        assertFalse(addedFourth);
+    }
+
 }
