@@ -83,4 +83,27 @@ class CoffeeMakerTest {
         assertFalse(duplicateAdded);
         assertEquals(10, stored.getPrice());
     }
+
+    /** Verifies that only three recipes can be stored and a fourth is rejected. */
+    @Test
+    void recipeCapacityIsThreeAndFourthIsRejected() {
+        // Arrange: BVA targets the capacity boundary: the 3rd versus 4th recipe.
+        Recipe a = recipe("A", 1, 1, 1, 1, 1);
+        Recipe b = recipe("B", 2, 1, 1, 1, 1);
+        Recipe c = recipe("C", 3, 1, 1, 1, 1);
+        Recipe d = recipe("D", 4, 1, 1, 1, 1);
+
+        // Act: attempt to add four different recipes.
+        boolean addedA = maker.addRecipe(a);
+        boolean addedB = maker.addRecipe(b);
+        boolean addedC = maker.addRecipe(c);
+        boolean addedD = maker.addRecipe(d);
+
+        // Assert: the first three fit; the fourth is not saved.
+        assertTrue(addedA);
+        assertTrue(addedB);
+        assertTrue(addedC);
+        assertFalse(addedD);
+        assertNull(maker.getRecipeForName("D").getName());
+    }
 }
