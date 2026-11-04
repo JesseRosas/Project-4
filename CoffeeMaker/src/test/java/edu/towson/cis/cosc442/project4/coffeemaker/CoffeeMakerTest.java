@@ -1,10 +1,13 @@
 package edu.towson.cis.cosc442.project4.coffeemaker;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 class CoffeeMakerTest {
     private CoffeeMaker maker;
-    
+
     /** Creates a fresh CoffeeMaker before every test for independent results. */
     @BeforeEach
     void setUp() {
@@ -21,5 +24,25 @@ class CoffeeMakerTest {
         r.setAmtSugar(sugar);
         r.setAmtChocolate(chocolate);
         return r;
+    }
+
+    /** Verifies that a new CoffeeMaker has three empty recipe slots and default inventory. */
+    @Test
+    void newMachineHasThreeEmptyRecipeSlotsAndInitialInventory() {
+        // Arrange: @BeforeEach created a new CoffeeMaker.
+
+        // Act: get its recipe slots and inventory.
+        Recipe[] recipes = maker.getRecipes();
+        Inventory inventory = maker.checkInventory();
+
+        // Assert: three slots are unnamed, and all ingredient amounts start at 15.
+        assertEquals(3, recipes.length);
+        for (Recipe stored : recipes) {
+            assertNull(stored.getName());
+        }
+        assertEquals(15, inventory.getCoffee());
+        assertEquals(15, inventory.getMilk());
+        assertEquals(15, inventory.getSugar());
+        assertEquals(15, inventory.getChocolate());
     }
 }
