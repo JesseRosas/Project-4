@@ -2,6 +2,8 @@ package edu.towson.cis.cosc442.project4.coffeemaker;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -44,5 +46,21 @@ class CoffeeMakerTest {
         assertEquals(15, inventory.getMilk());
         assertEquals(15, inventory.getSugar());
         assertEquals(15, inventory.getChocolate());
+    }
+
+     /** Verifies that adding a recipe places it in the first open slot. */
+    @Test
+    void addRecipeStoresItInFirstAvailableSlot() {
+        // Arrange: create a valid recipe for an empty CoffeeMaker.
+        Recipe latte = recipe("Latte", 10, 2, 1, 1, 0);
+
+        // Act: add the recipe and look it up by name.
+        boolean added = maker.addRecipe(latte);
+        Recipe found = maker.getRecipeForName("Latte");
+
+        // Assert: adding succeeds and both lookups reference the same recipe.
+        assertTrue(added);
+        assertSame(latte, maker.getRecipes()[0]);
+        assertSame(latte, found);
     }
 }
