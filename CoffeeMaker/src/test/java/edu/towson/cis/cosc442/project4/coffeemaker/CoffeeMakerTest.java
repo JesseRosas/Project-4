@@ -125,4 +125,20 @@ class CoffeeMakerTest {
         assertTrue(addedReplacement);
         assertEquals("Mocha", maker.getRecipes()[0].getName());
     }
+
+    /** Verifies that trying to delete a nonexistent recipe leaves existing data/recipes intact. */
+    @Test
+    void deletingUnknownRecipe() {
+        // Arrange: store a known recipe and create one with a different name.
+        Recipe latte = recipe("Latte", 10, 2, 1, 1, 0);
+        maker.addRecipe(latte);
+        Recipe unknown = recipe("Unknown", 1, 1, 1, 1, 1);
+
+        // Act: attempt to delete the unknown recipe.
+        boolean deleted = maker.deleteRecipe(unknown);
+
+        // Assert: deletion fails and the original recipe remains unchanged.
+        assertFalse(deleted);
+        assertSame(latte, maker.getRecipeForName("Latte"));
+    }
 }
