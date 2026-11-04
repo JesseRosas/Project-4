@@ -106,4 +106,23 @@ class CoffeeMakerTest {
         assertFalse(addedD);
         assertNull(maker.getRecipeForName("D").getName());
     }
+
+    /** Verifies that deleting an existing recipe removes it and makes its slot reusable. */
+    @Test
+    void deleteExistingRecipeRemovesItAndFreesASlot() {
+        // Arrange: add a recipe to the first slot.
+        Recipe latte = recipe("Latte", 10, 2, 1, 1, 0);
+        maker.addRecipe(latte);
+
+        // Act: delete the recipe, then add a different recipe.
+        boolean deleted = maker.deleteRecipe(latte);
+        Recipe afterDeletion = maker.getRecipeForName("Latte");
+        boolean addedReplacement = maker.addRecipe(recipe("Mocha", 12, 1, 1, 1, 2));
+
+        // Assert: deletion works, the old name is gone, and the first slot can be reused.
+        assertTrue(deleted);
+        assertNull(afterDeletion.getName());
+        assertTrue(addedReplacement);
+        assertEquals("Mocha", maker.getRecipes()[0].getName());
+    }
 }
