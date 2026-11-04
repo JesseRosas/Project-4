@@ -141,4 +141,19 @@ class CoffeeMakerTest {
         assertFalse(deleted);
         assertSame(latte, maker.getRecipeForName("Latte"));
     }
+
+     /** Verifies that a null or unnamed recipe cannot be deleted. */
+    @Test
+    void deletingNullOrEmptyRecipeReturnsFalse() {
+        // Arrange: ISP covers a null object and a non-null object with a null name.
+        Recipe unnamed = new Recipe();
+
+        // Act: attempt both invalid deletions.
+        boolean deletedNull = maker.deleteRecipe(null);
+        boolean deletedUnnamed = maker.deleteRecipe(unnamed);
+
+        // Assert: neither deletion succeeds.
+        assertFalse(deletedNull);
+        assertFalse(deletedUnnamed);
+    }
 }
