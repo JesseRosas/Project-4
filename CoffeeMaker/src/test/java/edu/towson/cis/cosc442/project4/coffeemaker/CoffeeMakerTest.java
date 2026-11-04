@@ -1,6 +1,7 @@
 package edu.towson.cis.cosc442.project4.coffeemaker;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -62,5 +63,24 @@ class CoffeeMakerTest {
         assertTrue(added);
         assertSame(latte, maker.getRecipes()[0]);
         assertSame(latte, found);
+    }
+
+    /** Verifies that recipes cannot share a name even when their other fields differ. */
+    @Test
+    void duplicateRecipeNameCannotBeAdded() {
+        // Arrange: ISP uses equal names but different prices and ingredient amounts.
+        Recipe first = recipe("Latte", 10, 2, 1, 1, 0);
+        Recipe duplicate = recipe("Latte", 25, 4, 2, 3, 1);
+        boolean firstAdded = maker.addRecipe(first);
+
+        // Act: attempt to add another recipe with the same name.
+        // Doesn't matter if the duplicate recipe has different details, it should still fail to be added.
+        boolean duplicateAdded = maker.addRecipe(duplicate);
+        Recipe stored = maker.getRecipeForName("Latte");
+
+        // Assert: the first addition succeeds, the duplicate fails, and original data remains.
+        assertTrue(firstAdded);
+        assertFalse(duplicateAdded);
+        assertEquals(10, stored.getPrice());
     }
 }
