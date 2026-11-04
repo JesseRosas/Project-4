@@ -7,6 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 class CoffeeMakerTest {
     private CoffeeMaker maker;
@@ -213,6 +215,75 @@ class CoffeeMakerTest {
         // Assert: editing succeeds but the machine remains at full capacity.
         assertTrue(edited);
         assertFalse(addedFourth);
+    }
+
+      /** Verifies that addInventory increases every ingredient by the supplied amount. */
+    @Test
+    void addToInventory() {
+        // Arrange: default stock is 15 of each ingredient.
+
+        // Act: add different positive quantities and inspect the inventory.
+        boolean added = maker.addInventory(1, 2, 3, 4);
+        Inventory inventory = maker.checkInventory();
+
+        // Assert: each ingredient increased by its corresponding amount.
+        assertTrue(added);
+        assertEquals(16, inventory.getCoffee());
+        assertEquals(17, inventory.getMilk());
+        assertEquals(18, inventory.getSugar());
+        assertEquals(19, inventory.getChocolate());
+    }
+
+    /** Verifies that adding zero units is accepted without changing inventory. */
+    @Test
+    void addingZeroToInventory() {
+        // Arrange: BVA checks zero, the minimum accepted addition for each ingredient.
+
+        // Act: add zero units to every ingredient.
+        boolean added = maker.addInventory(0, 0, 0, 0);
+        Inventory inventory = maker.checkInventory();
+
+        // Assert: the operation succeeds without changing the starting quantities.
+        assertTrue(added);
+        assertEquals(15, inventory.getCoffee());
+        assertEquals(15, inventory.getMilk());
+        assertEquals(15, inventory.getSugar());
+        assertEquals(15, inventory.getChocolate());
+    }
+
+    /** Verifies that any negative addition rejects the entire inventory update. */
+    @ParameterizedTest
+    @CsvSource({"-1, 0, 0, 0", "0, -1, 0, 0", "0, 0, -1, 0", "0, 0, 0, -1"})
+    void negativeInventory(int coffee, int milk, int sugar, int chocolate) {
+        // Arrange: ISP puts the invalid input in each of the four ingredient fields;
+        // BVA uses -1 (just below zero) with the other additions set to zero.
+
+        // Act: attempt to add the quantities to the inventory.
+        boolean added = maker.addInventory(coffee, milk, sugar, chocolate);
+        Inventory inventory = maker.checkInventory();
+
+        // Assert: any negative amount rejects the update and leaves all stock unchanged.
+        assertFalse(added);
+        assertEquals(15, inventory.getCoffee());
+        assertEquals(15, inventory.getMilk());
+        assertEquals(15, inventory.getSugar());
+        assertEquals(15, inventory.getChocolate());
+    }
+
+    /** Verifies that checkInventory returns the same inventory object as stock changes. */
+    @Test
+    void checkInventory() {
+        // Arrange: capture a reference to the machine's inventory.
+        Inventory inventory = maker.checkInventory();
+
+        // Act: add one unit of every ingredient and retrieve the inventory again.
+        boolean added = maker.addInventory(1, 1, 1, 1);
+        Inventory currentInventory = maker.checkInventory();
+
+        // Assert: inventory was updated in place, not replaced with a separate object.
+        assertTrue(added);
+        assertSame(inventory, currentInventory);
+        assertEquals(16, inventory.getMilk());
     }
 
 }
