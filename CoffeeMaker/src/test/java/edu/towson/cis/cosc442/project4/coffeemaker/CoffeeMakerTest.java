@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -35,7 +34,6 @@ class CoffeeMakerTest {
 
     /** Verifies that a new CoffeeMaker has three empty recipe slots and default inventory. */
 
-    @Disabled ("Temporarily disabled")
     @Test
     void newMachineInitialStatus() {
         // Arrange: @BeforeEach created a new CoffeeMaker.
@@ -72,8 +70,6 @@ class CoffeeMakerTest {
     }
 
     /** Verifies that recipes cannot share a name even when their other fields differ. */
-
-    @Disabled ("Temporarily disabled")
     @Test
     void duplicateRecipeName() {
         // Arrange: ISP uses equal names but different prices and ingredient amounts.
@@ -151,8 +147,6 @@ class CoffeeMakerTest {
     }
 
      /** Verifies that a null or unnamed recipe cannot be deleted. */
-
-    @Disabled ("Temporarily disabled")
     @Test
     void deletingNullOrEmptyRecipe() {
         // Arrange: ISP covers a null object and a non-null object with a null name.
@@ -191,7 +185,6 @@ class CoffeeMakerTest {
     }
 
     /** Verifies that editing cannot change a stored recipe's name. */
-    @Disabled ("Temporarily disabled")
     @Test
     void editCannotRenameExistingRecipe() {
         // Arrange: ISP uses different old and new recipe names.
@@ -209,7 +202,6 @@ class CoffeeMakerTest {
     }
 
     /** Verifies that editing a recipe does not accidentally open another recipe slot. */
-    @Disabled ("Temporarily disabled")
     @Test
     void editingDoesNotFreeExtraRecipeSlots() {
         // Arrange: BVA fills all three slots, then prepares an edit and a fourth recipe.
@@ -299,8 +291,6 @@ class CoffeeMakerTest {
      /** An exact price purchase returns change appropriately 
       * and updates remaining inventory correctly.
       */
-
-    @Disabled ("Temporarily disabled")
     @Test
     void exactChangeAndInventoryUpdate() {
         // Arrange: BVA tests payment exactly equal to the recipe price (10).
@@ -320,7 +310,6 @@ class CoffeeMakerTest {
         assertEquals(14, inventory.getChocolate());
     }
 
-     @Disabled ("Temporarily disabled")
     /** Overpayment returns the correct change. */
     @Test
     void correctChangeReturns() {
@@ -336,8 +325,6 @@ class CoffeeMakerTest {
     }
 
     /** Verifies that paying too little refunds the full amount and consumes no ingredients. */
-    
-    @Disabled ("Temporarily disabled")
     @Test
     void insufficientPayment() {
         // Arrange: BVA uses a payment of 9, one unit below the required price of 10.
