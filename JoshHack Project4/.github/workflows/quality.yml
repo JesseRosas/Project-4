@@ -1,3 +1,4 @@
+
 name: JoshHack Quality Checks
 
 on:
@@ -9,6 +10,11 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: JoshHack
+
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -19,6 +25,10 @@ jobs:
           distribution: temurin
           java-version: '17'
           cache: maven
+          cache-dependency-path: JoshHack/pom.xml
+
+      - name: Make Maven Wrapper executable
+        run: chmod +x mvnw
 
       - name: Run JUnit regression tests
         run: ./mvnw test
@@ -31,5 +41,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: joshhack-pit-report
-          path: target/pit-reports/
-          if-no-files-found: warn
+          path: JoshHack/target/pit-reports/
