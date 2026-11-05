@@ -33,6 +33,7 @@ class CoffeeMakerTest {
     }
 
     /** Verifies that a new CoffeeMaker has three empty recipe slots and default inventory. */
+
     @Test
     void newMachineInitialStatus() {
         // Arrange: @BeforeEach created a new CoffeeMaker.
@@ -309,7 +310,7 @@ class CoffeeMakerTest {
         assertEquals(14, inventory.getChocolate());
     }
 
-     /** Overpayment returns the correct change. */
+    /** Overpayment returns the correct change. */
     @Test
     void correctChangeReturns() {
         // Arrange: ISP covers payment greater than the recipe price.
