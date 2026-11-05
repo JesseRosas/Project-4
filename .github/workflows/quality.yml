@@ -24,7 +24,20 @@ jobs:
       - name: Run JUnit regression tests
         working-directory: CoffeeMaker
         run: ./mvnw test
+        
+    # Add PIT mutation testing later
+      - name: Run PIT mutation testing
+        working-directory: CoffeeMaker
+        run: ./mvnw test-compile org.pitest:pitest-maven:mutationCoverage
 
-      # Add PIT mutation testing later
+    # Add PIT report artifact upload later
+      - name: Upload PIT report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pit-report
+          path: target/pit-reports/
 
-      # Add PIT report artifact upload later
+
+
+    
