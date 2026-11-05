@@ -1,0 +1,29 @@
+name: CoffeeMaker Quality Checks
+
+on:
+  push:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+
+      - name: Run JUnit regression tests
+        run: ./mvnw test
+
+      # Add PIT mutation testing later
+
+      # Add PIT report artifact upload later
