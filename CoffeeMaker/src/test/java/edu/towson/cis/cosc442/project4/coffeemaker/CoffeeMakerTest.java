@@ -34,7 +34,7 @@ class CoffeeMakerTest {
 
     /** Verifies that a new CoffeeMaker has three empty recipe slots and default inventory. */
     @Test
-    void newMachineHasThreeEmptyRecipeSlotsAndInitialInventory() {
+    void newMachineInitialStatus() {
         // Arrange: @BeforeEach created a new CoffeeMaker.
 
         // Act: get its recipe slots and inventory.
@@ -54,7 +54,7 @@ class CoffeeMakerTest {
 
      /** Verifies that adding a recipe places it in the first open slot. */
     @Test
-    void addRecipeStoresItInFirstAvailableSlot() {
+    void addRecipe() {
         // Arrange: create a valid recipe for an empty CoffeeMaker.
         Recipe latte = recipe("Latte", 10, 2, 1, 1, 0);
 
@@ -70,7 +70,7 @@ class CoffeeMakerTest {
 
     /** Verifies that recipes cannot share a name even when their other fields differ. */
     @Test
-    void duplicateRecipeNameCannotBeAdded() {
+    void duplicateRecipeName() {
         // Arrange: ISP uses equal names but different prices and ingredient amounts.
         Recipe first = recipe("Latte", 10, 2, 1, 1, 0);
         Recipe duplicate = recipe("Latte", 25, 4, 2, 3, 1);
@@ -89,7 +89,7 @@ class CoffeeMakerTest {
 
     /** Verifies that only three recipes can be stored and a fourth is rejected. */
     @Test
-    void recipeCapacityIsThreeAndFourthIsRejected() {
+    void recipeCapacity() {
         // Arrange: BVA targets the capacity boundary: the 3rd versus 4th recipe.
         Recipe a = recipe("A", 1, 1, 1, 1, 1);
         Recipe b = recipe("B", 2, 1, 1, 1, 1);
@@ -112,7 +112,7 @@ class CoffeeMakerTest {
 
     /** Verifies that deleting an existing recipe removes it and makes its slot reusable. */
     @Test
-    void deleteExistingRecipeRemovesItAndFreesASlot() {
+    void deleteExistingRecipe() {
         // Arrange: add a recipe to the first slot.
         Recipe latte = recipe("Latte", 10, 2, 1, 1, 0);
         maker.addRecipe(latte);

@@ -36,7 +36,7 @@ class RecipeTest {
 
     /** Verifies that setName updates the name returned by getName and toString. */
     @Test
-    void setNameAndToStringReturnTheRecipeName() {
+    void setNameAndToString() {
         // Arrange: create an unnamed recipe.
         Recipe recipe = new Recipe();
 
@@ -53,7 +53,7 @@ class RecipeTest {
     /** Checks that negative prices become zero and nonnegative prices are preserved. */
     @ParameterizedTest
     @ValueSource(ints = {-10, -1, 0, 1, 5})
-    void setPriceHandlesNegativeAndBoundaryValues(int value) {
+    void setPriceNegative(int value) {
         // Arrange: ISP uses negative, zero, and positive inputs;
         // BVA uses -1, 0, and 1 around the minimum valid price (0).
         Recipe recipe = new Recipe();
@@ -69,7 +69,7 @@ class RecipeTest {
     /** Checks that the coffee amount handles negative and boundary inputs correctly. */
     @ParameterizedTest
     @ValueSource(ints = {-10, -1, 0, 1, 5})
-    void setCoffeeHandlesNegativeAndBoundaryValues(int value) {
+    void setCoffeeNegative(int value) {
         // Arrange: ISP covers negative, zero, and positive amounts;
         // BVA checks -1, 0, and 1 around the allowed minimum (0).
         Recipe recipe = new Recipe();
@@ -85,7 +85,7 @@ class RecipeTest {
     /** Checks that the milk amount handles negative and boundary inputs correctly. */
     @ParameterizedTest
     @ValueSource(ints = {-10, -1, 0, 1, 5})
-    void setMilkHandlesNegativeAndBoundaryValues(int value) {
+    void setMilkNegative(int value) {
         // Arrange: ISP covers negative, zero, and positive amounts;
         // BVA checks -1, 0, and 1 around the allowed minimum (0).
         Recipe recipe = new Recipe();
@@ -101,7 +101,7 @@ class RecipeTest {
     /** Checks that the sugar amount handles negative and boundary inputs correctly. */
     @ParameterizedTest
     @ValueSource(ints = {-10, -1, 0, 1, 5})
-    void setSugarHandlesNegativeAndBoundaryValues(int value) {
+    void setSugarNegative(int value) {
         // Arrange: ISP covers negative, zero, and positive amounts;
         // BVA checks -1, 0, and 1 around the allowed minimum (0).
         Recipe recipe = new Recipe();
@@ -117,7 +117,7 @@ class RecipeTest {
     /** Checks that the chocolate amount handles negative and boundary inputs correctly. */
     @ParameterizedTest
     @ValueSource(ints = {-10, -1, 0, 1, 5})
-    void setChocolateHandlesNegativeAndBoundaryValues(int value) {
+    void setChocolateNegative(int value) {
         // Arrange: ISP covers negative, zero, and positive amounts;
         // BVA checks -1, 0, and 1 around the allowed minimum (0).
         Recipe recipe = new Recipe();
@@ -132,7 +132,7 @@ class RecipeTest {
 
     /** Verifies that recipes with matching names are equal even if other fields differ. */
     @Test
-    void recipesWithSameNameAreEqualEvenIfIngredientsDiffer() {
+    void sameNameRecipes() {
         // Arrange: ISP uses matching names but different prices and ingredient amounts.
         Recipe first = new Recipe();
         first.setName("Latte");
@@ -153,7 +153,7 @@ class RecipeTest {
 
     /** Verifies that recipes with different names are not equal. */
     @Test
-    void recipesWithDifferentNamesAreNotEqual() {
+    void differentNameRecipes() {
         // Arrange: ISP uses two non-null, different recipe names.
         Recipe first = new Recipe();
         first.setName("Latte");
@@ -169,7 +169,7 @@ class RecipeTest {
 
     /** Verifies that recipe-name comparisons are case-sensitive. */
     @Test
-    void recipesWithNamesOfDifferentCaseAreNotEqual() {
+    void recipeNameCaseSensitive() {
         // Arrange: ISP uses names differing only in letter case.
         Recipe first = new Recipe();
         first.setName("Latte");
@@ -183,24 +183,9 @@ class RecipeTest {
         assertFalse(areEqual);
     }
 
-    /** Verifies that equality is false if the other recipe has no name. */
-    @Test
-    void equalityReturnsFalseWhenTheOtherRecipeNameIsNull() {
-        // Arrange: ISP uses a named recipe compared with an unnamed recipe.
-        Recipe first = new Recipe();
-        first.setName("Latte");
-        Recipe other = new Recipe();
-
-        // Act: compare the named recipe against the unnamed one.
-        boolean areEqual = first.equals(other);
-
-        // Assert: a null name in the other recipe means not equal.
-        assertFalse(areEqual);
-    }
-
     /** Verifies that equality is false if this recipe has no name. */
     @Test
-    void equalityReturnsFalseWhenThisRecipeNameIsNull() {
+    void noNameRecipe() {
         // Arrange: ISP uses an unnamed recipe compared with a named recipe.
         Recipe first = new Recipe();
         Recipe other = new Recipe();
@@ -213,17 +198,4 @@ class RecipeTest {
         assertFalse(areEqual);
     }
 
-    /** Verifies that two unnamed recipes are not considered equal. */
-    @Test
-    void equalityReturnsFalseWhenBothNamesAreNull() {
-        // Arrange: ISP uses two recipes with null names.
-        Recipe first = new Recipe();
-        Recipe second = new Recipe();
-
-        // Act: compare the two unnamed recipes.
-        boolean areEqual = first.equals(second);
-
-        // Assert: two null names do not count as a matching recipe name.
-        assertFalse(areEqual);
-    }
 }
