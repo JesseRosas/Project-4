@@ -3,10 +3,14 @@ package edu.towson.cis.cosc442.project4.coffeemaker;
 public class CoffeeMaker {
     /** Array of recipes in coffee maker */
     private Recipe[] recipeArray;
+
     /** Number of recipes in coffee maker */
-    private final int NUM_RECIPES = 4;
+    // FIX 1: Changed recipe capacity from 4 to 3 to match requirements.
+    private final int NUM_RECIPES = 3;
+
     /** Array describing if the array is full */
     private boolean[] recipeFull;
+
     /** Inventory of the coffee maker */
     private Inventory inventory;
 
@@ -26,7 +30,7 @@ public class CoffeeMaker {
     /**
      * Adds a new recipe to the coffee maker if there is space and it does not
      * already exist.
-     * 
+     *
      * @param r the recipe to be added
      * @return true if the recipe was successfully added, false otherwise
      */
@@ -46,9 +50,13 @@ public class CoffeeMaker {
             for (int i = 0; i < NUM_RECIPES; i++) {
                 if (!recipeFull[i]) {
                     emptySpot = i;
-                    canAddRecipe = true;
+
+                    // FIX 2: Stop at the first available recipe slot.
+                    // Previously, the loop continued and selected the last empty slot.
+                    break;
                 }
             }
+
             if (emptySpot != -1) {
                 recipeArray[emptySpot] = r;
                 recipeFull[emptySpot] = true;
@@ -61,7 +69,7 @@ public class CoffeeMaker {
 
     /**
      * Deletes the specified recipe from the coffee maker if it exists.
-     * 
+     *
      * @param r the recipe to be deleted
      * @return true if the recipe was successfully deleted, false otherwise
      */
@@ -70,7 +78,12 @@ public class CoffeeMaker {
         if (r != null) {
             for (int i = 0; i < NUM_RECIPES; i++) {
                 if (r.equals(recipeArray[i])) {
-                    recipeArray[i] = recipeArray[i];
+
+                    // FIX 3: Replace the deleted recipe with an empty recipe.
+                    // Previously, the recipe was assigned back to itself.
+                    recipeArray[i] = new Recipe();
+                    recipeFull[i] = false;
+
                     canDeleteRecipe = true;
                 }
             }
@@ -80,32 +93,33 @@ public class CoffeeMaker {
 
     /**
      * Replaces an existing recipe with a new recipe if the new recipe can be added.
-     * 
+     *
      * @param oldRecipe the recipe to be replaced
      * @param newRecipe the new recipe to replace the old one
      * @return true if the recipe was successfully edited, false otherwise
      */
     public boolean editRecipe(Recipe oldRecipe, Recipe newRecipe) {
-        boolean canEditRecipe = false;
+
+        // FIX 4: Validate the recipe inputs and locate the original recipe
+        // rather than searching for the replacement recipe.
+        if (oldRecipe == null || newRecipe == null || oldRecipe.getName() == null
+                || !oldRecipe.getName().equals(newRecipe.getName())) {
+            return false;
+        }
+
         for (int i = 0; i < NUM_RECIPES; i++) {
-            if (recipeArray[i].getName() != null) {
-                if (newRecipe.equals(recipeArray[i])) {
-                    recipeArray[i] = new Recipe();
-                    if (addRecipe(newRecipe)) {
-                        canEditRecipe = true;
-                    } else {
-                        canEditRecipe = false;
-                    }
-                }
+            if (recipeFull[i] && oldRecipe.equals(recipeArray[i])) {
+                recipeArray[i] = newRecipe;
+                return true;
             }
         }
-        return canEditRecipe;
+        return false;
     }
 
     /**
      * Adds specified amounts of ingredients to the inventory if all amounts are
      * non-negative.
-     * 
+     *
      * @param amtCoffee    amount of coffee to add
      * @param amtMilk      amount of milk to add
      * @param amtSugar     amount of sugar to add
@@ -114,7 +128,10 @@ public class CoffeeMaker {
      */
     public boolean addInventory(int amtCoffee, int amtMilk, int amtSugar, int amtChocolate) {
         boolean canAddInventory = true;
-        if (amtCoffee < 0 || amtMilk < 0 || amtSugar > 0 || amtChocolate < 0) {
+
+        // FIX 5: Corrected the sugar validation comparison.
+        // Positive sugar amounts should be accepted; negative amounts rejected.
+        if (amtCoffee < 0 || amtMilk < 0 || amtSugar < 0 || amtChocolate < 0) {
             canAddInventory = false;
         } else {
             inventory.setCoffee(inventory.getCoffee() + amtCoffee);
@@ -127,7 +144,7 @@ public class CoffeeMaker {
 
     /**
      * Returns the current inventory of the coffee maker.
-     * 
+     *
      * @return the current Inventory object
      */
     public Inventory checkInventory() {
@@ -137,7 +154,7 @@ public class CoffeeMaker {
     /**
      * Attempts to make coffee with the specified recipe if paid amount is
      * sufficient and ingredients are available.
-     * 
+     *
      * @param r       the recipe to make coffee from
      * @param amtPaid the amount of money paid
      * @return the change returned to the customer, or the entire amount if the
@@ -145,17 +162,25 @@ public class CoffeeMaker {
      */
     public int makeCoffee(Recipe r, int amtPaid) {
         boolean canMakeCoffee = true;
+
         if (amtPaid < r.getPrice()) {
             canMakeCoffee = false;
         }
+
         if (!inventory.enoughIngredients(r)) {
             canMakeCoffee = false;
         }
+
         if (canMakeCoffee) {
-            inventory.setCoffee(inventory.getCoffee() + r.getAmtCoffee());
+
+            // FIX 6: Subtract coffee ingredients after a successful purchase.
+            // Previously, coffee inventory increased instead of decreasing.
+            inventory.setCoffee(inventory.getCoffee() - r.getAmtCoffee());
+
             inventory.setMilk(inventory.getMilk() - r.getAmtMilk());
             inventory.setSugar(inventory.getSugar() - r.getAmtSugar());
             inventory.setChocolate(inventory.getChocolate() - r.getAmtChocolate());
+
             return amtPaid - r.getPrice();
         } else {
             return amtPaid;
@@ -164,7 +189,7 @@ public class CoffeeMaker {
 
     /**
      * Returns the array of recipes stored in the coffee maker.
-     * 
+     *
      * @return an array of all recipes
      */
     public Recipe[] getRecipes() {
@@ -173,12 +198,13 @@ public class CoffeeMaker {
 
     /**
      * Finds and returns the recipe with the given name.
-     * 
+     *
      * @param name the name of the recipe to find
      * @return the recipe matching the given name, or an empty recipe if none found
      */
     public Recipe getRecipeForName(String name) {
         Recipe r = new Recipe();
+
         for (int i = 0; i < NUM_RECIPES; i++) {
             if (recipeArray[i].getName() != null) {
                 if ((recipeArray[i].getName()).equals(name)) {
@@ -189,3 +215,4 @@ public class CoffeeMaker {
         return r;
     }
 }
+
