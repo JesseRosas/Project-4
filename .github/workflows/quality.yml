@@ -22,6 +22,7 @@ jobs:
           cache: maven
 
       - name: Run JUnit regression tests
+        working-directory: CoffeeMaker
         run: ./mvnw test
 
       # Add PIT mutation testing later
